@@ -127,6 +127,7 @@ only when the evidence explicitly shows zero. `available: false` means that the
 module was not supplied, not that the business performed poorly.
 
 ```json
+
 {
   "restaurant": {
     "name": "",
@@ -137,7 +138,10 @@ module was not supplied, not that the business performed poorly.
   },
   "campaign_metrics": {
     "ad_spend": null,
-    "kpi_mode": "standard|restructured",
+    "currency": "",
+    "reporting_window": "",
+    "campaign_status": "",
+    "kpi_mode": null,
     "impressions": null,
     "clicks": null,
     "ctr": null,
@@ -147,13 +151,18 @@ module was not supplied, not that the business performed poorly.
     "directions": null,
     "phone_calls": null,
     "website_visits": null,
-    "other_actions": null
+    "other_actions": null,
+    "search_terms": []
   },
   "gbp_metrics": {
     "total_interactions": null,
-    "chart_type": "dual|red-only",
-    "view": "weekly|monthly",
+    "chart_type": null,
+    "view": null,
     "data_points": [],
+    "series_labels": {
+      "series_a": "",
+      "series_b": ""
+    },
     "search_terms": []
   },
   "ai_search": {
@@ -164,21 +173,35 @@ module was not supplied, not that the business performed poorly.
     "top3_ranking": null,
     "prompts": [],
     "sov_your": null,
-    "sov_competitors": []
+    "sov_competitors": [],
+    "daily_trend": {
+      "direction": null,
+      "data_points": []
+    },
+    "ai_origin_traffic": {
+      "total_page_views": null,
+      "sources": []
+    }
   },
   "local_map": {
     "available": false,
     "avg_rank": null,
     "visibility_pct": null,
     "keywords": [],
-    "competitors": []
+    "competitors": [],
+    "measurement_context": {
+      "query_set": [],
+      "location": "",
+      "date_range": ""
+    }
   },
   "review_data": {
     "available": false,
     "tags_positive": [],
     "tags_neutral": [],
     "tags_negative": [],
-    "summary_bullets": []
+    "summary_bullets": [],
+    "review_scope": ""
   },
   "confidence_flags": {
     "low_confidence_fields": [],
@@ -186,7 +209,7 @@ module was not supplied, not that the business performed poorly.
   },
   "insights": [],
   "warnings": [],
-  "language": "chinese|english",
+  "language": null,
   "diagnostic_summary": {
     "paid_media": "",
     "local_visibility": "",
@@ -201,6 +224,26 @@ module was not supplied, not that the business performed poorly.
 
 Complete this intermediate representation before drafting analysis or HTML. The
 reference documents must use the same field names and missing-value conventions.
+
+### Data contract conventions
+
+- `kpi_mode`: `"standard"` or `"restructured"`; use `null` if unresolved.
+- `chart_type`: `"dual"` or `"red-only"`; use `null` if unresolved.
+- `view`: `"weekly"` or `"monthly"`; use `null` if unresolved.
+- `language`: `"chinese"` or `"english"`; use `null` until selected.
+- `campaign_metrics.search_terms`: An array of visible campaign keyword/search-term strings. Do not mix with GBP search terms.
+- `campaign_metrics.reporting_window`: The campaign reporting period as displayed in the source. Do not confuse it with campaign lifetime.
+- `campaign_metrics.currency`: The source currency code or label when identifiable; otherwise an empty string.
+- `gbp_metrics.series_labels`: Actual visible chart legend labels. For a single-series chart, use `series_a` for the visible series and leave `series_b` empty.
+- `ai_search.daily_trend.direction`: `"rising"`, `"flat"`, `"declining"`, or `null` when unsupported or ambiguous.
+- `ai_search.daily_trend.data_points`: Visible dated measurements only; each item uses `{"date": "", "value": null, "estimated": false}`.
+- `ai_search.ai_origin_traffic.sources`: Visible source-level traffic records, each using `{"source": "", "page_views": null}`.
+- `local_map.measurement_context`: Record the visible query set, geographic context, and measurement period.
+- `review_data.review_scope`: Preserve the displayed review sample scope, such as `"Last 50 reviews"`, without assuming it represents all reviews.
+- `null` means unknown, missing, or not yet selected. It never means zero.
+- `[]` means no extractable list items were supplied. Do not interpret it as a verified count of zero.
+- Keep the original source labels and measurement definitions where they are necessary to interpret a metric.
+- Any new field must be reflected consistently in the extraction schema, analysis rules, and HTML template before claiming end-to-end support.
 
 ---
 
