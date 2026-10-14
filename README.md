@@ -1,2 +1,2 @@
-# ads-review-skill
-AI-assisted advertising review workflow for restaurant growth operations
+# restaurant-growth-review-skill
+An AI-assisted advertising review skill built around a structured restaurant growth operations workflow.
